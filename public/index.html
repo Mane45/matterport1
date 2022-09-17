@@ -1,47 +1,79 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src='https://static.matterport.com/showcase-sdk/latest.js'></script>
-  </head>
-  <body>
-    <iframe
-      width="853"
-      height="480"
-      src="https://my.matterport.com/show/?m=zpZPNYgpciV&play=1&applicationKey=uyisxaxpf6yqksxw91z6aryud"
-      frameborder="0"
-      allow="fullscreen; vr"
-      id="showcase-iframe">
-    </iframe>
 
-    <script>
-      (async function connectSdk() {
-        const sdkKey = 'uyisxaxpf6yqksxw91z6aryud'; // TODO: replace with your sdk key
-        const iframe = document.getElementById('showcase-iframe');
+<head>
+  <script src='https://static.matterport.com/showcase-sdk/latest.js'></script>
+</head>
 
-        // connect the sdk; log an error and stop if there were any connection issues
-        try {
-          const mpSdk = await window.MP_SDK.connect(
-            iframe, // Obtained earlier
-            sdkKey, // Your SDK key
-            '' // Unused but needs to be a valid string
-          );
-          onShowcaseConnect(mpSdk);
-        } catch (e) {
-          console.error(e);
-        }
-      })();
+<body>
+  <iframe width="853" height="480"
+    src="https://my.matterport.com/show/?m=zpZPNYgpciV&play=1&applicationKey=uyisxaxpf6yqksxw91z6aryud" frameborder="0"
+    allow="fullscreen; vr" id="showcase-iframe">
+  </iframe>
+  <button id="zoom">zoom</button>
+  <button id="rotate">rotate</button>
 
-      async function onShowcaseConnect(mpSdk) {
-        // insert your sdk code here. See the ref https://matterport.github.io/showcase-sdk//docs/reference/current/index.html
+  <script>
+    (async function connectSdk() {
+      const sdkKey = 'uyisxaxpf6yqksxw91z6aryud'; // TODO: replace with your sdk key
+      const iframe = document.getElementById('showcase-iframe');
 
-        // try retrieving the model data and log the model's sid
-        try {
-          const modelData = await mpSdk.Model.getData();
-          console.log('Model sid:' + modelData.sid);
-        } catch (e) {
-          console.error(e);
-        }
+      // connect the sdk; log an error and stop if there were any connection issues
+      try {
+        const mpSdk = await window.MP_SDK.connect(
+          iframe, // Obtained earlier
+          sdkKey, // Your SDK key
+          '' // Unused but needs to be a valid string
+        );
+        onShowcaseConnect(mpSdk)
+      } catch (e) {
+        console.error(e);
       }
-    </script>
+    })();
+
+    let zoomBtn = document.getElementById('zoom');
+    let rotateBtn = document.getElementById('rotate');
+    async function onShowcaseConnect(mpSdk) {
+      // insert your sdk code here. See the ref https://matterport.github.io/showcase-sdk//docs/reference/current/index.html
+
+      // try retrieving the model data and log the model's sid
+      try {
+        const modelData = await mpSdk.Model.getData();
+        //console.log('Model sid:' + modelData.sid);
+        //console.log(modelData);
+        //mpSdk.on(mpSdk.Camera.Event.MOVE)
+        zoomBtn.addEventListener('click', () => {
+          console.log('zoomBtn');
+          // mpSdk.Camera.zoom.subscribe((zoom) => {
+          //   console.log(zoom);
+          //   zoom.level = 10;
+          //   console.log(zoom);
+          // })
+          mpSdk.Camera.zoomBy(0.1)
+            .then(function (newZoom) {
+              console.log('Camera zoomed to', newZoom);
+            });
+        })
+        rotateBtn.addEventListener('click', () => {
+          console.log('rotateBtn');
+          // mpSdk.Camera.getPose().then(pose => {
+          //   console.log(pose)
+          // })
+          mpSdk.Camera.rotate(10, -20, { speed: 2 })
+            .then(function () {
+              // Camera rotation complete.
+            })
+            .catch(function (error) {
+              // Camera rotation error.
+            });
+        })
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  </script>
+
   <body>
+
 </html>
